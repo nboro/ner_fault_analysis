@@ -44,7 +44,12 @@ def _load_mock_text(path):
     for line in raw_lines:
         if not line.strip():
             continue
-        cleaned.append(speaker_re.sub("", line).strip())
+        # Replace the "Agent:"/"Caller:" prefix with a plain lowercase
+        # speaker word so the output reads like a continuous transcript
+        # (e.g. "agent good afternoon ... caller yes good afternoon ...").
+        cleaned.append(
+            speaker_re.sub(lambda m: m.group(1).lower() + " ", line).strip()
+        )
     return " ".join(cleaned)
 
 
@@ -57,16 +62,16 @@ def _locate(text, needle, start=0):
 
 
 # Card 1 entity: full name span
-_c1_start, _c1_end = _locate(MOCK_TEXT, "Jon van Dough")
+_c1_start, _c1_end = _locate(MOCK_TEXT, "Jon Dough")
 # First occurrence of the city (next to the name)
-_city1_start, _city1_end = _locate(MOCK_TEXT, "Leeuwarden")
+_city1_start, _city1_end = _locate(MOCK_TEXT, "Brussels")
 
 # Card 2 entity: postal code
 _c2_start, _c2_end = _locate(MOCK_TEXT, "1111 XA")
 # Street name
-_street_start, _street_end = _locate(MOCK_TEXT, "Hoogweidelaan 84")
+_street_start, _street_end = _locate(MOCK_TEXT, "84 Maple Street")
 # Second occurrence of the city (in the address context)
-_second_city_start, _second_city_end = _locate(MOCK_TEXT, "Leeuwarden", _city1_end)
+_second_city_start, _second_city_end = _locate(MOCK_TEXT, "Brussels", _city1_end)
 
 # Predicted spans (as a model under study would produce):
 #   Card 1: boundaries match ground truth, label differs (NAME_GIVEN vs NAME).
@@ -74,7 +79,7 @@ _second_city_start, _second_city_end = _locate(MOCK_TEXT, "Leeuwarden", _city1_e
 #   Card 2: boundaries and label both match ground truth.
 #           This prediction is correct under both policies.
 pred_labels = [
-    {"text": "Jon van Dough", "label": "NAME_GIVEN",
+    {"text": "Jon Dough", "label": "NAME_GIVEN",
      "start": _c1_start, "end": _c1_end},
     {"text": "1111 XA", "label": "LOCATION_ZIP",
      "start": _c2_start, "end": _c2_end},
@@ -82,15 +87,15 @@ pred_labels = [
 
 # Ground truth annotations
 true_labels = [
-    {"text": "Jon van Dough", "label": "NAME",
+    {"text": "Jon Dough", "label": "NAME",
      "start": _c1_start, "end": _c1_end},
-    {"text": "Leeuwarden", "label": "LOCATION_CITY",
+    {"text": "Brussels", "label": "LOCATION_CITY",
      "start": _city1_start, "end": _city1_end},
-    {"text": "Hoogweidelaan 84", "label": "LOCATION_ADDRESS_STREET",
+    {"text": "84 Maple Street", "label": "LOCATION_ADDRESS_STREET",
      "start": _street_start, "end": _street_end},
     {"text": "1111 XA", "label": "LOCATION_ZIP",
      "start": _c2_start, "end": _c2_end},
-    {"text": "Leeuwarden", "label": "LOCATION_CITY",
+    {"text": "Brussels", "label": "LOCATION_CITY",
      "start": _second_city_start, "end": _second_city_end},
 ]
 
