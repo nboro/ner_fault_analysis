@@ -55,7 +55,7 @@ The original data ingestion has been removed because the underlying customer ser
 
 The dashboard provides controls for selecting the model, policy, label scope and measure. Each card displays a transcript with the predicted spans above the manually annotated ground-truth spans. Predicted spans are colored by per-span verdict under the active policy: correct in green, incorrect in orange, spurious in purple, missed in red. Ground-truth spans use a single color regardless of verdict.
 
-The screenshot shows the same transcript under the two evaluation policies of the study. Under Strict (top), the prediction on *Jon van Dough* is incorrect because the predicted label `NAME_GIVEN` does not match the ground-truth label `NAME`. Under Exact (bottom), the same prediction is correct because the entity label is not considered.
+The screenshot shows the same transcript under the two evaluation policies of the study. Under Strict (top), the prediction on *Jon Dough* is incorrect because the predicted label `NAME_GIVEN` does not match the ground-truth label `NAME`. Under Exact (bottom), the same prediction is correct because the entity label is not considered.
 
 ## Applying the tool to a different corpus
 
